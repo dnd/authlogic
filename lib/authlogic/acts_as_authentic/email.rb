@@ -32,6 +32,16 @@ module Authlogic
         end
         alias_method :validate_email_field=, :validate_email_field
         
+        # Whether or not to require a email confirmation. If you want your users to confirm their email
+        # just set this to true.
+        #
+        # * <tt>Default:</tt> false
+        # * <tt>Accepts:</tt> Boolean
+        def require_email_confirmation(value = nil)
+          rw_config(:require_email_confirmation, value, false)
+        end
+        alias_method :require_email_confirmation=, :require_email_confirmation
+
         # A hash of options for the validates_length_of call for the email field. Allows you to change this however you want.
         #
         # <b>Keep in mind this is ruby. I wanted to keep this as flexible as possible, so you can completely replace the hash or
@@ -91,6 +101,24 @@ module Authlogic
         def merge_validates_uniqueness_of_email_field_options(options = {})
           self.validates_uniqueness_of_email_field_options = validates_uniqueness_of_email_field_options.merge(options)
         end
+
+        # A hash of options for the validates_confirmation_of call for the email field. Allows you to change this however you want.
+        #
+        # <b>Keep in mind this is ruby. I wanted to keep this as flexible as possible, so you can completely replace the hash or
+        # merge options into it. Checkout the convenience function merge_validates_length_of_email_field_options to merge
+        # options.</b>
+        #
+        # * <tt>Default:</tt> Nothing
+        # * <tt>Accepts:</tt> Hash of options accepted by validates_confirmation_of
+        def validates_confirmation_of_email_field_options(value = {})
+          rw_config(:validates_confirmation_of_email_field_options, value)
+        end
+        alias_method :validates_confirmation_of_email_field_options=, :validates_confirmation_of_email_field_options
+        
+        # See merge_validates_length_of_email_field_options. The same thing, except for validates_confirmation_of_email_field_options
+        def merge_validates_confirmation_of_email_field_options(options = {})
+          self.validates_confirmation_of_email_field_options = validates_confirmation_of_email_field_options.merge(options)
+        end
       end
       
       # All methods relating to the email field
@@ -101,6 +129,8 @@ module Authlogic
               validates_length_of email_field, validates_length_of_email_field_options
               validates_format_of email_field, validates_format_of_email_field_options
               validates_uniqueness_of email_field, validates_uniqueness_of_email_field_options
+
+              validates_confirmation_of email_field, validates_confirmation_of_email_field_options if require_email_confirmation
             end
           end
         end

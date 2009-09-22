@@ -93,5 +93,17 @@ module ActsAsAuthenticTest
       assert !u.valid?
       assert u.errors[:email].size == 0
     end
+
+    def test_validates_confirmation_of_email
+      u = User.new
+      u.email = "user@host.com"
+      u.email_confirmation = "someone@example.com"
+      assert !u.valid?
+      assert u.errors[:email].size > 0
+      
+      u.email_confirmation = "user@host.com"
+      assert !u.valid?
+      assert u.errors[:email].size == 0
+    end
   end
 end
